@@ -11,7 +11,7 @@ Live market data. Instant WebSocket feed. Free tier. No credit card required.
 
 [![API Status](https://img.shields.io/badge/API%20Status-Operational-brightgreen?style=flat-square)](https://usd-ih41.onrender.com/api/health)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
-[![Security](https://img.shields.io/badge/Security-RS256%20JWT-orange?style=flat-square)](docs/authentication.md)
+[![Security](https://img.shields.io/badge/Security-RS256%20JWT-orange?style=flat-square)](#security)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-erbilrate.com-success?style=flat-square)](https://usd-ih41.onrender.com/)
 
 [Get API Key](https://usd-ih41.onrender.com/) · [Documentation](https://usd-ih41.onrender.com/docs) · [Live Demo](https://usd-ih41.onrender.com/)
@@ -201,7 +201,7 @@ ErbilRate uses a **token budget system**. Each API call costs tokens from your d
 
 | Tier | Daily Token Budget | Speed Limit | Price |
 |---|---|---|---|
-| **Free** | 10,000 tokens/day | 300 req/min | Free forever |
+| **Free** | 10,000 tokens/day | 60 req/min | Free forever |
 | **Pro** | 500,000 tokens/day | 1,000 req/min | Coming soon |
 
 **Token costs per endpoint:**
@@ -269,17 +269,39 @@ This repository contains the complete API layer — authentication, rate limitin
 - A Clerk account (for admin JWT auth)
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/erbilrate-api
+git clone https://github.com/abdulhadikamaran/erbilrate-api
 cd erbilrate-api
 pip install -r requirements.txt
 cp .env.example .env
-# Fill in your own .env values
+# Fill in your .env values (see .env.example for all required vars)
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
 See [`.env.example`](.env.example) for all required configuration.
 
 > **Note:** The live ErbilRate service uses a proprietary real-time data pipeline not included in this repository. This repo gives you the full API infrastructure — bring your own data source.
+
+---
+
+## FAQ
+
+**How fresh is the rate data?**  
+Rates update the moment the market moves — typically within seconds. The system uses a real-time event listener, not a daily batch job.
+
+**What if I hit my rate limit?**  
+You'll get a `429` response. Your budget resets at UTC midnight. Use `/api/me` to check remaining tokens before calling.
+
+**Can I use this in production?**  
+Yes. The API passes 47/47 security tests and runs on production infrastructure. Check [live status](https://usd-ih41.onrender.com/status) anytime.
+
+**Is there an SDK?**  
+Not yet — official SDKs for JS, Python, PHP, and Flutter are planned. For now, use the ready-made [examples](examples/).
+
+**How is this different from Fixer or XE?**  
+Global APIs publish a government rate updated once a day. ErbilRate sources the actual Erbil bazaar rate in real-time — the rate you'd get exchanging cash on the ground.
+
+**What happens if the service is briefly down?**  
+The `/api/health` endpoint is always public. Cache the last known rate on your side and retry with exponential backoff.
 
 ---
 
