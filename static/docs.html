@@ -198,7 +198,8 @@
             </div>
             <div class="nav-links" style="display: flex; gap: 1.5rem;">
                 <a href="/">Home</a>
-                <a href="/developers">Developer Dashboard</a>
+                <a href="/status">Status</a>
+                <a href="/developers">Get API Key</a>
             </div>
         </nav>
 
@@ -268,10 +269,11 @@
                 });
                 const data = await res.json();
 
-                if (res.ok && data.user_id !== 'guest') {
+                // Check tier field (not user_id) — guests get tier:'guest'
+                if (res.ok && data.tier && data.tier !== 'guest') {
                     statusBadge.style.background = 'rgba(226, 254, 83, 0.2)';
                     statusBadge.style.color = 'var(--accent)';
-                    statusBadge.textContent = 'Verified';
+                    statusBadge.textContent = `✓ Valid · ${data.remaining?.toLocaleString() ?? '?'} tokens left`;
                     apiKeyInput.style.borderColor = 'var(--accent)';
                 } else {
                     statusBadge.style.background = 'rgba(255, 77, 77, 0.2)';
@@ -280,6 +282,8 @@
                     apiKeyInput.style.borderColor = '#ff4d4d';
                 }
             } catch (err) {
+                statusBadge.style.background = 'rgba(255, 77, 77, 0.2)';
+                statusBadge.style.color = '#ff4d4d';
                 statusBadge.textContent = 'Network Error';
             }
         });
@@ -344,16 +348,22 @@
             let playgroundHtml = `
                 <div class="playground-area" ${isProtected ? 'style="opacity:0.5; pointer-events:none;"' : ''}>
                     <div class="playground-header">
-                        <h4>▶ Interactive Playground</h4>
+                        <h4>▶ Try It Live</h4>
                         ${isProtected ? '<span style="color:#ff4d4d; font-size:0.8rem;">Admin UI Only</span>' : ''}
                     </div>
                     ${inputsHtml}
                     <button class="run-btn" onclick="runDynamicTest(this, '${method.toUpperCase()}', '${path}')">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                        Run Test
+                        Run Request
                     </button>
                     <div class="response-output">
-                        <div class="status-badge"></div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                            <div class="status-badge"></div>
+                            <div style="display:flex;gap:0.75rem;align-items:center;">
+                                <span class="latency-label" style="font-size:0.75rem;color:#64748b;"></span>
+                                <button class="copy-btn" onclick="copyResponse(this)" style="background:rgba(255,255,255,0.07);border:1px solid #333;color:#aaa;padding:3px 10px;border-radius:5px;cursor:pointer;font-size:0.75rem;">Copy</button>
+                            </div>
+                        </div>
                         <pre></pre>
                     </div>
                 </div>
@@ -460,40 +470,44 @@
 
             // UI Update
             btn.disabled = true;
-            btn.innerHTML = 'Testing...';
+            btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg>Running...</span>';
             outputDiv.style.display = 'block';
             statusBadge.className = 'status-badge';
             statusBadge.textContent = 'Fetching...';
             pre.textContent = '';
-            
+            const latencyEl = playgroundArea.querySelector('.latency-label');
+            if (latencyEl) latencyEl.textContent = '';
+
+            const t0 = performance.now();
             try {
                 const headers = { 'Authorization': 'Bearer ' + apiKey };
-                
-                const response = await fetch(finalUrl, {
-                    method: method,
-                    headers: headers
-                });
-                
-                const data = await response.json().catch(() => ({ error: "Not JSON response" }));
-                
-                // Update Status
+                const response = await fetch(finalUrl, { method, headers });
+                const latency = Math.round(performance.now() - t0);
+                const data = await response.json().catch(() => ({ error: 'Response is not JSON' }));
+
                 statusBadge.textContent = `${response.status} ${response.statusText}`;
-                if (response.ok) {
-                    statusBadge.classList.add('status-200');
-                } else {
-                    statusBadge.classList.add('status-error');
-                }
-                
+                statusBadge.className = `status-badge ${response.ok ? 'status-200' : 'status-error'}`;
+                if (latencyEl) latencyEl.textContent = `${latency}ms`;
                 pre.textContent = JSON.stringify(data, null, 2);
-                
+
             } catch (err) {
                 statusBadge.textContent = 'Network Error';
-                statusBadge.classList.add('status-error');
+                statusBadge.className = 'status-badge status-error';
                 pre.textContent = err.toString();
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Run Test';
+                btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Run Request';
             }
+        }
+
+        function copyResponse(btn) {
+            const pre = btn.closest('.response-output').querySelector('pre');
+            if (!pre.textContent) return;
+            navigator.clipboard.writeText(pre.textContent).then(() => {
+                btn.textContent = 'Copied!';
+                btn.style.color = 'var(--accent)';
+                setTimeout(() => { btn.textContent = 'Copy'; btn.style.color = '#aaa'; }, 1500);
+            });
         }
 
         // Initialize Engine on load
