@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erbil Dollar Rate</title>
+    <link rel="stylesheet" href="/static/css/style.css?v=2">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <nav>
+            <div class="brand">
+                <div class="brand-dot"></div>
+                ErbilRate
+            </div>
+            <div class="nav-links">
+                <a href="/static/developers.html" class="nav-api-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    API Access
+                </a>
+            </div>
+        </nav>
+
+        <!-- Top Card: Converter & Live Rate -->
+        <div class="glass-card" style="margin-bottom: 2rem;">
+            <div class="rate-header" style="margin-bottom: 2rem; text-align: center;">
+                <div class="rate-badge" style="justify-content: center; margin: 0 auto 0.5rem;">
+                    <div class="pulse"></div>
+                    Live Market Rate
+                </div>
+                <div id="latest-rate" class="rate-value" style="font-size: 3.5rem;">---</div>
+                <div class="rate-sub">
+                    IQD per $100 
+                    <span id="rate-diff" class="rate-diff"></span>
+                </div>
+            </div>
+
+            <!-- Currency Converter -->
+            <div class="converter-container" style="max-width: 500px; margin: 0 auto;">
+                <div class="converter-input-group">
+                    <div class="currency-label">🇺🇸 USD</div>
+                    <input type="text" inputmode="decimal" id="usd-input" class="converter-input" value="100" placeholder="Enter USD amount" onfocus="this.select()">
+                </div>
+                
+                <button class="converter-swap" id="swap-btn" title="Swap currencies">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M11 18l-4 4-4-4"/><path d="M17 14V2"/><path d="M21 6l-4-4-4 4"/></svg>
+                </button>
+
+                <div class="converter-input-group">
+                    <div class="currency-label">🇮🇶 IQD</div>
+                    <input type="text" id="iqd-input" class="converter-input" value="" placeholder="Converted amount" readonly onfocus="this.select()">
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Card: Chart -->
+        <div class="glass-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="color: var(--text-primary); font-size: 1.25rem;">Market History</h3>
+                <div class="chart-toggles">
+                    <button class="toggle-btn" data-days="1">1D</button>
+                    <button class="toggle-btn" data-days="7">7D</button>
+                    <button class="toggle-btn" data-days="30">1M</button>
+                    <button class="toggle-btn active" data-days="90">3M</button>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="rateChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ── WebSocket Logic ──────────────────────────────────────────
+        const rateElement = document.getElementById('latest-rate');
+        const diffElement = document.getElementById('rate-diff');
+        let currentRate = 0;
+
+        function updateRate(rateData) {
+            const newRate = rateData.average;
+            rateElement.textContent = newRate.toLocaleString();
+            
+            if (currentRate !== 0 && newRate !== currentRate) {
+                const diff = newRate - currentRate;
+                diffElement.textContent = (diff > 0 ? '+' : '') + diff;
+                diffElement.className = 'rate-diff ' + (diff > 0 ? 'diff-up' : 'diff-down');
+            } else if (rateData.daily_change) {
+                diffElement.textContent = (rateData.daily_change > 0 ? '+' : '') + rateData.daily_change;
+                diffElement.className = 'rate-diff ' + (rateData.daily_change > 0 ? 'diff-up' : 'diff-down');
+            }
+            
+            currentRate = newRate;
+            updateConverter();
+        }
+
+        // ── Converter Logic ──────────────────────────────────────────
+        const usdInput = document.getElementById('usd-input');
+        const iqdInput = document.getElementById('iqd-input');
+        const swapBtn = document.getElementById('swap-btn');
+        let isUsdToIqd = true;
+
+        function updateConverter() {
+            if (currentRate === 0) return;
+            const sourceInput = isUsdToIqd ? usdInput : iqdInput;
+            const destInput = isUsdToIqd ? iqdInput : usdInput;
+            
+            if (sourceInput.value === '') {
+                destInput.value = '';
+                return;
+            }
+            
+            const val = parseFloat(sourceInput.value.replace(/,/g, '')) || 0;
+            
+            if (isUsdToIqd) {
+                const totalIqd = (val / 100) * currentRate;
+                destInput.value = Math.round(totalIqd).toLocaleString();
+            } else {
+                const totalUsd = (val / currentRate) * 100;
+                // Avoid decimals if it's a whole number
+                destInput.value = Number.isInteger(totalUsd) ? totalUsd : totalUsd.toFixed(2);
+            }
+            
+            // Micro-interaction trigger
+            destInput.classList.remove('input-updated');
+            void destInput.offsetWidth; // Force DOM reflow
+            destInput.classList.add('input-updated');
+        }
+
+        function formatNumberInput(e) {
+            const input = e.target;
+            if (input.readOnly) return;
+
+            let val = input.value.replace(/,/g, '').replace(/[^\d.]/g, '');
+            if (val === '') {
+                input.value = '';
+                return;
+            }
+
+            const parts = val.split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            
+            input.value = parts.join('.');
+        }
+
+        usdInput.addEventListener('input', (e) => { 
+            isUsdToIqd = true; 
+            formatNumberInput(e);
+            updateConverter(); 
+        });
+        iqdInput.addEventListener('input', (e) => { 
+            isUsdToIqd = false; 
+            formatNumberInput(e);
+            updateConverter(); 
+        });
+
+        swapBtn.addEventListener('click', () => {
+            isUsdToIqd = !isUsdToIqd;
+            usdInput.readOnly = !isUsdToIqd;
+            iqdInput.readOnly = isUsdToIqd;
+            
+            // Visual swap
+            const usdParent = usdInput.parentElement;
+            const iqdParent = iqdInput.parentElement;
+            const container = usdParent.parentElement;
+            
+            if (isUsdToIqd) {
+                container.insertBefore(usdParent, swapBtn);
+                container.appendChild(iqdParent);
+            } else {
+                container.insertBefore(iqdParent, swapBtn);
+                container.appendChild(usdParent);
+            }
+            updateConverter();
+        });
+
+        // Initial Data Load
+        fetch('/api/rate/latest')
+            .then(res => res.json())
+            .then(data => {
+                if (data.average) {
+                    updateRate(data);
+                }
+            })
+            .catch(console.error);
+
+        function connectWS() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const ws = new WebSocket(`${protocol}//${window.location.host}/api/ws`);
+            
+            ws.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'rate_update') {
+                        updateRate(data.rate);
+                        // Refresh chart on new rate
+                        const activeBtn = document.querySelector('.toggle-btn.active');
+                        if (activeBtn) {
+                            loadChart(parseInt(activeBtn.dataset.days));
+                        }
+                    }
+                } catch(e) {}
+            };
+            
+            ws.onclose = () => setTimeout(connectWS, 2000);
+            
+            setInterval(() => { if (ws.readyState === WebSocket.OPEN) ws.send("ping"); }, 30000);
+        }
+        
+        connectWS();
+
+        // ── Chart Logic ──────────────────────────────────────────────
+        const ctx = document.getElementById('rateChart').getContext('2d');
+        let chartInstance = null;
+
+        function loadChart(days) {
+            fetch(`/api/rate/history?days=${days}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.rates || data.rates.length === 0) {
+                        // Create a dummy flatline so the chart doesn't look broken
+                        const now = new Date();
+                        data.rates = [
+                            { average: currentRate || 150000, last_updated: new Date(now.getTime() - 86400000).toISOString() },
+                            { average: currentRate || 150000, last_updated: now.toISOString() }
+                        ];
+                    }
+
+                    // History is returned descending (newest first). Reverse for chart (oldest to newest).
+                    const rates = data.rates.reverse();
+                    
+                    const labels = rates.map(r => {
+                        const d = new Date(r.last_updated);
+                        return days === 1 ? d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : d.toLocaleDateString();
+                    });
+                    const values = rates.map(r => r.average);
+
+                    if (chartInstance) {
+                        chartInstance.destroy();
+                    }
+
+                    chartInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'IQD per $100',
+                                data: values,
+                                borderColor: '#E2FE53',
+                                backgroundColor: 'rgba(226, 254, 83, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 0,
+                                pointHitRadius: 10
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false,
+                                    backgroundColor: 'rgba(0,0,0,0.8)',
+                                    titleColor: '#888',
+                                    bodyColor: '#fff',
+                                    bodyFont: { size: 14, weight: 'bold' }
+                                }
+                            },
+                            scales: {
+                                x: { display: false },
+                                y: {
+                                    display: true,
+                                    position: 'right',
+                                    grid: { color: 'rgba(255,255,255,0.05)' },
+                                    ticks: { color: '#888', font: { family: 'Outfit' } }
+                                }
+                            },
+                            interaction: { mode: 'nearest', axis: 'x', intersect: false }
+                        }
+                    });
+                });
+        }
+
+        // Initialize Chart
+        loadChart(90);
+
+        // Chart Toggles
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                loadChart(e.target.dataset.days);
+            });
+        });
+    </script>
+</body>
+</html>

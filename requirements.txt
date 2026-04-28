@@ -1,0 +1,19 @@
+# Core
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+
+# Telegram
+telethon==1.37.0
+
+# Database
+asyncpg==0.29.0
+
+# Cache
+redis[asyncio]==5.0.8
+
+# Config
+python-dotenv==1.0.1
+
+# Security: JWT verification
+PyJWT[crypto]==2.12.1
+httpx==0.28.1

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Portal - ErbilRate</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <div class="container">
+        <nav>
+            <div class="brand">
+                <div class="brand-dot"></div>
+                ErbilRate <span style="color: var(--text-secondary); font-weight: 400; font-size: 1rem;">Developers</span>
+            </div>
+            <div class="nav-links" id="user-button-container">
+                <a href="/static/index.html">← Back to Home</a>
+            </div>
+        </nav>
+
+        <!-- Auth Section -->
+        <div id="auth-section" class="glass-card" style="text-align: center; margin-top: 4rem;">
+            <h2 style="margin-bottom: 1rem; font-size: 2rem;">Build with ErbilRate</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">Sign in to generate your free API key and access 10,000 requests per day.</p>
+            
+            <div id="custom-auth-buttons" style="display: flex; flex-direction: column; gap: 1rem; max-width: 300px; margin: 0 auto; display: none;">
+                <button onclick="window.Clerk.client.signIn.authenticateWithRedirect({strategy: 'oauth_google', redirectUrl: '/static/developers.html', redirectUrlComplete: '/static/developers.html'})" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: #fff; padding: 12px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 1rem; transition: background 0.2s ease;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/><path d="M1 1h22v22H1z" fill="none"/></svg>
+                    Continue with Google
+                </button>
+                <button onclick="window.Clerk.client.signIn.authenticateWithRedirect({strategy: 'oauth_github', redirectUrl: '/static/developers.html', redirectUrlComplete: '/static/developers.html'})" class="btn-secondary" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: #fff; padding: 12px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 1rem; transition: background 0.2s ease;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#FFFFFF" xmlns="http://www.w3.org/2000/svg"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    Continue with GitHub
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Section (Hidden by default) -->
+        <div id="dashboard-section" style="display: none;">
+            
+            <!-- Usage Dashboard -->
+            <div class="glass-card" style="margin-bottom: 2rem; padding: 1.5rem 2rem;">
+                <h2 style="font-size: 1.25rem; margin-bottom: 1rem; color: var(--text-primary);">Token Usage</h2>
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 0.5rem;">
+                    <div style="font-size: 2rem; font-weight: 700; color: var(--accent);">
+                        0 <span style="font-size: 1rem; color: var(--text-secondary); font-weight: 500;">/ 10,000</span>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary);">Resets in 24h</div>
+                </div>
+                <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden;">
+                    <div style="width: 0%; height: 100%; background: var(--accent); border-radius: 4px; transition: width 1s ease-out;" id="usage-bar"></div>
+                </div>
+            </div>
+
+            <div id="generate-section" class="glass-card">
+                <div class="dashboard-header">
+                    <div>
+                        <h2 style="font-size: 1.5rem; margin-bottom: 0.25rem;">Your API Keys</h2>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">Do not share your API keys in publicly accessible areas.</p>
+                    </div>
+                    <button id="btn-generate" class="btn-primary" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 8px;">+ Create secret key</button>
+                </div>
+
+                <table class="key-table">
+                    <thead>
+                        <tr>
+                            <th>NAME</th>
+                            <th>SECRET KEY</th>
+                            <th>CREATED</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="keys-tbody">
+                        <tr><td colspan="4" style="text-align: center; color: var(--text-secondary);">Loading keys...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="dev-cta" style="margin-top: 2rem; background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="color: #fff; margin: 0;">Quick Start (cURL)</h3>
+                    <a href="/docs" target="_blank" class="btn-secondary" style="text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        Interactive API Docs
+                    </a>
+                </div>
+                <div style="background: #000; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.85rem; color: var(--up-color); text-align: left; overflow-x: auto;">
+                    curl -X GET "https://erbilrate.com/api/rate/latest" \<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-H "Authorization: Bearer <span style="color: var(--text-secondary);">YOUR_API_KEY</span>"
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Raw Key Modal Overlay (Placed globally to avoid overflow constraints) -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div id="raw-key-modal" class="raw-key-modal">
+            <h4 style="color: #fff; font-size: 1.25rem; margin-bottom: 0.5rem;">Secret Key Generated!</h4>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">Please copy this key and save it somewhere safe. For security reasons, <strong>you will not be able to view it again.</strong></p>
+            
+            <div id="raw-key-display" class="raw-key-display"></div>
+            
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button id="btn-copy-key" class="btn-secondary" style="flex: 1; padding: 10px; border-radius: 6px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Copy Key
+                </button>
+                <button id="btn-close-modal" class="btn-primary" style="flex: 1; padding: 10px; border-radius: 6px; cursor: pointer;">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revoke Key Modal Overlay -->
+    <div id="revoke-modal-overlay" class="modal-overlay">
+        <div class="raw-key-modal" style="max-width: 400px; text-align: center;">
+            <h4 style="color: #ff4d4d; font-size: 1.25rem; margin-bottom: 0.5rem;">Revoke API Key?</h4>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.5rem;">This action cannot be undone. Any applications using this key will immediately stop working.</p>
+            
+            <div style="display: flex; gap: 1rem;">
+                <button id="btn-cancel-revoke" class="btn-secondary" style="flex: 1; padding: 10px; border-radius: 6px; cursor: pointer;">Cancel</button>
+                <button id="btn-confirm-revoke" class="btn-danger" style="flex: 1; padding: 10px; border-radius: 6px; cursor: pointer; background: rgba(255, 77, 77, 0.1);">Revoke</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clerk JS SDK -->
+    <script
+        async
+        crossorigin="anonymous"
+        data-clerk-publishable-key="pk_test_ZmFzdC1taWRnZS01MS5jbGVyay5hY2NvdW50cy5kZXYk"
+        src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js">
+    </script>
+    <script>
+        window.addEventListener('load', async function () {
+            await window.Clerk.load();
+            
+            const authSection = document.getElementById('auth-section');
+            const dashboardSection = document.getElementById('dashboard-section');
+            const authBox = document.getElementById('clerk-auth-box');
+            const userBtnContainer = document.getElementById('user-button-container');
+
+            if (window.Clerk.user) {
+                // User is logged in
+                authSection.style.display = 'none';
+                dashboardSection.style.display = 'block';
+                
+                // Mount the user profile button in the navbar
+                userBtnContainer.style.display = 'flex';
+                userBtnContainer.style.alignItems = 'center';
+                userBtnContainer.style.gap = '15px';
+                userBtnContainer.innerHTML = '<a href="/" style="color: var(--text-secondary); text-decoration: none;">← Back to Home</a><div id="clerk-user-btn"></div>';
+                window.Clerk.mountUserButton(document.getElementById('clerk-user-btn'));
+
+                // Load API Keys
+                fetchKeys();
+
+                // Handle anchor link auto-scroll & guide animation
+                setTimeout(() => {
+                    if (window.location.hash === '#generate-section') {
+                        const target = document.getElementById('generate-section');
+                        if (target) {
+                            window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' });
+                            
+                            // Guide the user to the button with a pulse effect
+                            const btn = document.getElementById('btn-generate');
+                            let scale = 1.0;
+                            let dir = 0.05;
+                            let pulses = 0;
+                            
+                            const pulseInterval = setInterval(() => {
+                                scale += dir;
+                                if (scale >= 1.1) dir = -0.05;
+                                if (scale <= 1.0) { dir = 0.05; pulses++; }
+                                
+                                btn.style.transform = `scale(${scale})`;
+                                btn.style.boxShadow = `0 0 ${30 * (scale-1)*10}px rgba(226, 254, 83, 0.8)`;
+                                
+                                if (pulses > 3) {
+                                    clearInterval(pulseInterval);
+                                    btn.style.transform = 'scale(1)';
+                                    btn.style.boxShadow = 'none';
+                                }
+                            }, 50);
+                        }
+                    }
+                }, 500); // Wait for DOM to paint
+            } else {
+                // User is logged out
+                authSection.style.display = 'block';
+                dashboardSection.style.display = 'none';
+                document.getElementById('custom-auth-buttons').style.display = 'flex';
+            }
+        });
+
+        // ── Dashboard Logic ──────────────────────────────────────────
+
+        async function fetchWithAuth(url, options = {}) {
+            const token = await window.Clerk.session.getToken();
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+            return fetch(url, { ...options, headers });
+        }
+
+        async function fetchKeys() {
+            try {
+                const res = await fetchWithAuth('/api/admin/keys');
+                const data = await res.json();
+                const tbody = document.getElementById('keys-tbody');
+                tbody.innerHTML = '';
+
+                if (!data.keys || data.keys.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary);">You don't have any API keys yet.</td></tr>`;
+                    return;
+                }
+
+                data.keys.forEach(key => {
+                    const date = new Date(key.created_at).toLocaleDateString();
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="font-weight: 500;">${key.name}</td>
+                            <td><span class="key-mask">${key.masked_key}</span></td>
+                            <td style="color: var(--text-secondary);">${date}</td>
+                            <td style="text-align: right;">
+                                <button class="btn-danger" onclick="revokeKey('${key.id}')">Revoke</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        document.getElementById('btn-generate').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-generate');
+            btn.textContent = 'Generating...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetchWithAuth('/api/admin/keys/generate', {
+                    method: 'POST',
+                    body: JSON.stringify({ name: "Production Key" })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    document.getElementById('modal-overlay').style.display = 'flex';
+                    document.getElementById('raw-key-display').textContent = data.raw_key;
+                    fetchKeys();
+                } else {
+                    alert('Error: ' + (data.detail || 'Failed to generate key'));
+                }
+            } catch (e) {
+                console.error(e);
+            } finally {
+                btn.textContent = '+ Create secret key';
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('btn-copy-key').addEventListener('click', async () => {
+            const key = document.getElementById('raw-key-display').textContent;
+            await navigator.clipboard.writeText(key);
+            const btn = document.getElementById('btn-copy-key');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!';
+            setTimeout(() => btn.innerHTML = originalText, 2000);
+        });
+
+        document.getElementById('btn-close-modal').addEventListener('click', () => {
+            document.getElementById('modal-overlay').style.display = 'none';
+        });
+
+        let keyToRevokeId = null;
+
+        function revokeKey(id) {
+            keyToRevokeId = id;
+            document.getElementById('revoke-modal-overlay').style.display = 'flex';
+        }
+
+        document.getElementById('btn-cancel-revoke').addEventListener('click', () => {
+            document.getElementById('revoke-modal-overlay').style.display = 'none';
+            keyToRevokeId = null;
+        });
+
+        document.getElementById('btn-confirm-revoke').addEventListener('click', async () => {
+            if (!keyToRevokeId) return;
+            const btn = document.getElementById('btn-confirm-revoke');
+            btn.textContent = 'Revoking...';
+            btn.disabled = true;
+
+            try {
+                await fetchWithAuth(`/api/admin/keys/${keyToRevokeId}`, { method: 'DELETE' });
+                fetchKeys();
+                document.getElementById('revoke-modal-overlay').style.display = 'none';
+            } catch (e) {
+                console.error(e);
+            } finally {
+                btn.textContent = 'Revoke';
+                btn.disabled = false;
+                keyToRevokeId = null;
+            }
+        });
+    </script>
+</body>
+</html>
