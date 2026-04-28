@@ -345,18 +345,36 @@ async def get_rate_history(
     description="Returns your current daily token usage and remaining budget.",
 )
 async def get_me(user: dict = Depends(get_authorized_user)):
+    # Guest users have no token budget — prompt them to get a key
+    if user.get("tier") == "guest":
+        return {
+            "tier": "guest",
+            "usage": 0,
+            "remaining": rate_limit.DAILY_TOKEN_BUDGET,
+            "daily_limit": rate_limit.DAILY_TOKEN_BUDGET,
+            "note": "Get a free API key at /developers to track your usage.",
+        }
+
     api_key = user.get("api_key")
     # Read current balance without billing (cost=0)
-    token_check = await rate_limit.consume_tokens(api_key, cost=0)
+    # Graceful fallback if Redis is temporarily unavailable
+    try:
+        token_check = await rate_limit.consume_tokens(api_key, cost=0)
+        usage = token_check["usage"]
+        remaining = token_check["remaining"]
+    except Exception:
+        usage = 0
+        remaining = rate_limit.DAILY_TOKEN_BUDGET
 
     # NOTE: email intentionally excluded — avoid leaking account details
     # in shared or logged environments. Use the Clerk dashboard to see email.
     return {
         "tier": user.get("tier"),
-        "usage": token_check["usage"],
-        "remaining": token_check["remaining"],
+        "usage": usage,
+        "remaining": remaining,
         "daily_limit": rate_limit.DAILY_TOKEN_BUDGET,
     }
+
 
 # ── GET /api/health ───────────────────────────────────────────────────────
 
