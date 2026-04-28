@@ -138,3 +138,13 @@ async def root():
 async def custom_docs():
     """Serve the custom API Documentation page."""
     return FileResponse(str(STATIC_DIR / "docs.html"))
+
+@app.get("/status", include_in_schema=False)
+async def status_page():
+    """Serve the public API status page."""
+    return FileResponse(str(STATIC_DIR / "status.html"))
+
+@app.get("/developers", include_in_schema=False)
+async def developers_page():
+    """Serve the developer portal (API key management)."""
+    return FileResponse(str(STATIC_DIR / "developers.html"))
