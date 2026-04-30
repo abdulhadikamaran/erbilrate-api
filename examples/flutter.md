@@ -14,12 +14,12 @@ dependencies:
 ## Service Class
 
 ```dart
-// lib/services/erbilrate_service.dart
+// lib/services/iqdrate_service.dart
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class ErbilRateService {
+class IQDRateService {
   static const String _baseUrl = 'https://usd-ih41.onrender.com/api';
   static const String _apiKey  = 'YOUR_API_KEY';
 
@@ -134,7 +134,7 @@ class HistoricalRate {
 // lib/widgets/rate_card.dart
 
 import 'package:flutter/material.dart';
-import '../services/erbilrate_service.dart';
+import '../services/iqdrate_service.dart';
 import '../models/exchange_rate.dart';
 
 class RateCard extends StatefulWidget {
@@ -158,7 +158,7 @@ class _RateCardState extends State<RateCard> {
   Future<void> _fetchRate() async {
     setState(() { _loading = true; _error = null; });
     try {
-      final rate = await ErbilRateService.getLatestRate();
+      final rate = await IQDRateService.getLatestRate();
       setState(() { _rate = rate; _loading = false; });
     } catch (e) {
       setState(() { _error = e.toString(); _loading = false; });
@@ -206,12 +206,12 @@ class _RateCardState extends State<RateCard> {
 ## WebSocket — Live Feed
 
 ```dart
-// lib/services/erbilrate_websocket.dart
+// lib/services/iqdrate_websocket.dart
 
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-class ErbilRateWebSocket {
+class IQDRateWebSocket {
   static const String _wsUrl = 'wss://usd-ih41.onrender.com/api/ws';
 
   WebSocketChannel? _channel;

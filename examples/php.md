@@ -13,7 +13,7 @@ PHP 7.4+ with `curl` extension (enabled by default on most hosts).
 define('ERBILRATE_API_KEY', 'YOUR_API_KEY');
 define('ERBILRATE_BASE_URL', 'https://usd-ih41.onrender.com/api');
 
-function erbilrate_get(string $endpoint, array $params = []): array
+function iqdrate_get(string $endpoint, array $params = []): array
 {
     $url = ERBILRATE_BASE_URL . $endpoint;
     if (!empty($params)) {
@@ -55,7 +55,7 @@ function erbilrate_get(string $endpoint, array $params = []): array
 }
 
 // Usage
-$rate = erbilrate_get('/rate/latest');
+$rate = iqdrate_get('/rate/latest');
 echo "1 USD = " . number_format($rate['average']) . " IQD\n";
 echo "Updated: " . $rate['last_updated'] . "\n";
 ```
@@ -65,7 +65,7 @@ echo "Updated: " . $rate['last_updated'] . "\n";
 ## Convert USD to IQD
 
 ```php
-$result = erbilrate_get('/convert/usd-to-iqd', ['amount' => 500]);
+$result = iqdrate_get('/convert/usd-to-iqd', ['amount' => 500]);
 echo $result['usd'] . " USD = " . number_format($result['iqd']) . " IQD\n";
 ```
 
@@ -74,7 +74,7 @@ echo $result['usd'] . " USD = " . number_format($result['iqd']) . " IQD\n";
 ## Get Historical Rates
 
 ```php
-$history = erbilrate_get('/rate/history', ['days' => 7]);
+$history = iqdrate_get('/rate/history', ['days' => 7]);
 
 foreach ($history['rates'] as $record) {
     echo $record['date'] . ": " . number_format($record['average']) . " IQD\n";
@@ -90,41 +90,41 @@ Display the live rate in a WordPress shortcode:
 ```php
 // Add to your theme's functions.php
 
-function erbilrate_shortcode(): string
+function iqdrate_shortcode(): string
 {
     try {
-        $rate = erbilrate_get('/rate/latest');
+        $rate = iqdrate_get('/rate/latest');
         $avg  = number_format($rate['average']);
-        return "<span class='erbilrate'>1 USD = {$avg} IQD</span>";
+        return "<span class='iqdrate'>1 USD = {$avg} IQD</span>";
     } catch (Exception $e) {
-        return "<span class='erbilrate-error'>Rate unavailable</span>";
+        return "<span class='iqdrate-error'>Rate unavailable</span>";
     }
 }
 
-add_shortcode('erbilrate', 'erbilrate_shortcode');
-// Use in posts/pages: [erbilrate]
+add_shortcode('iqdrate', 'iqdrate_shortcode');
+// Use in posts/pages: [iqdrate]
 ```
 
 ---
 
 ## Cache Responses (Simple File Cache)
 
-ErbilRate updates in real-time, but for high-traffic sites you may want to cache locally:
+IQDRate updates in real-time, but for high-traffic sites you may want to cache locally:
 
 ```php
-function erbilrate_cached(int $ttl_seconds = 60): array
+function iqdrate_cached(int $ttl_seconds = 60): array
 {
-    $cache_file = sys_get_temp_dir() . '/erbilrate_latest.json';
+    $cache_file = sys_get_temp_dir() . '/iqdrate_latest.json';
 
     if (file_exists($cache_file) && (time() - filemtime($cache_file)) < $ttl_seconds) {
         return json_decode(file_get_contents($cache_file), true);
     }
 
-    $data = erbilrate_get('/rate/latest');
+    $data = iqdrate_get('/rate/latest');
     file_put_contents($cache_file, json_encode($data));
     return $data;
 }
 
-$rate = erbilrate_cached(60); // fresh every 60 seconds
+$rate = iqdrate_cached(60); // fresh every 60 seconds
 echo number_format($rate['average']) . " IQD per USD\n";
 ```

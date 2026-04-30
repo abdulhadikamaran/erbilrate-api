@@ -76,7 +76,7 @@ class Settings:
     # ── CORS ─────────────────────────────────────────────────────────
     # Comma-separated list of allowed CORS origins.
     # Defaults to local dev origins. Override in production .env.
-    # Example: ALLOWED_ORIGINS=https://erbilrate.com,https://www.erbilrate.com
+    # Example: ALLOWED_ORIGINS=https://iqdrate.com,https://www.iqdrate.com
     ALLOWED_ORIGINS_RAW: str = os.getenv(
         "ALLOWED_ORIGINS",
         "http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:5500"

@@ -97,7 +97,7 @@ async def live_feed():
 
     async for websocket in websockets.connect(uri):
         try:
-            print("Connected to ErbilRate live feed")
+            print("Connected to IQDRate live feed")
             async for message in websocket:
                 if message == "pong":
                     continue
@@ -124,7 +124,7 @@ def safe_get_rate() -> dict | None:
             response = client.get(f"{BASE_URL}/rate/latest")
 
             if response.status_code == 401:
-                print("Invalid API key. Check your key at erbilrate.com.")
+                print("Invalid API key. Check your key at iqdrate.com.")
                 return None
 
             if response.status_code == 429:

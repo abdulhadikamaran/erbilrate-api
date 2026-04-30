@@ -1,6 +1,6 @@
-# Contributing to ErbilRate API
+# Contributing to IQDRate API
 
-Thank you for your interest in contributing. ErbilRate is an open API infrastructure project — the rate limiting, authentication, WebSocket system, and frontend are all open for improvement.
+Thank you for your interest in contributing. IQDRate is an open API infrastructure project — the rate limiting, authentication, WebSocket system, and frontend are all open for improvement.
 
 ---
 
@@ -27,8 +27,8 @@ Please do not open issues requesting access to these components.
 
 ### 1. Fork and Clone
 ```bash
-git clone https://github.com/YOUR_USERNAME/erbilrate-api
-cd erbilrate-api
+git clone https://github.com/YOUR_USERNAME/iqdrate-api
+cd iqdrate-api
 ```
 
 ### 2. Create a Branch
@@ -67,7 +67,7 @@ Write a clear description of what changed and why.
 
 **Do not open a public GitHub issue for security vulnerabilities.**
 
-Email directly: `security@erbilrate.com`
+Email directly: `security@iqdrate.com`
 
 Include:
 - Description of the vulnerability

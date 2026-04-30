@@ -79,7 +79,7 @@ function connectLiveFeed(onRate) {
   const ws = new WebSocket('wss://usd-ih41.onrender.com/api/ws');
 
   ws.onopen = () => {
-    console.log('Connected to ErbilRate live feed');
+    console.log('Connected to IQDRate live feed');
   };
 
   ws.onmessage = (event) => {

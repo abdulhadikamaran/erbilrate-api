@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="static/icons/icon-192.png" alt="ErbilRate Logo" width="80"/>
+<img src="static/icons/icon-192.png" alt="IQDRate Logo" width="80"/>
 
-# ErbilRate API
+# IQDRate API
 
 ### Real-time Iraqi Dinar Exchange Rates — Built for Developers
 
@@ -12,7 +12,7 @@ Live market data. Instant WebSocket feed. Free tier. No credit card required.
 [![API Status](https://img.shields.io/badge/API%20Status-Operational-brightgreen?style=flat-square)](https://usd-ih41.onrender.com/api/health)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 [![Security](https://img.shields.io/badge/Security-RS256%20JWT-orange?style=flat-square)](#security)
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-erbilrate.com-success?style=flat-square)](https://usd-ih41.onrender.com/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-iqdrate.com-success?style=flat-square)](https://usd-ih41.onrender.com/)
 
 [Get API Key](https://usd-ih41.onrender.com/) · [Documentation](https://usd-ih41.onrender.com/docs) · [Live Demo](https://usd-ih41.onrender.com/)
 
@@ -20,11 +20,11 @@ Live market data. Instant WebSocket feed. Free tier. No credit card required.
 
 ---
 
-## What is ErbilRate?
+## What is IQDRate?
 
-ErbilRate is a **financial data API** that provides real-time USD/IQD exchange rates sourced directly from the Erbil, Iraq currency market — updated the instant the market moves, not once a day.
+IQDRate is a **financial data API** that provides real-time USD/IQD exchange rates sourced directly from the Erbil, Iraq currency market — updated the instant the market moves, not once a day.
 
-Most global FX APIs (Fixer, OpenExchangeRates, XE) either don't carry IQD at all, or they publish a single government rate that doesn't reflect what the Erbil bazaar is actually trading at. ErbilRate fixes that.
+Most global FX APIs (Fixer, OpenExchangeRates, XE) either don't carry IQD at all, or they publish a single government rate that doesn't reflect what the Erbil bazaar is actually trading at. IQDRate fixes that.
 
 **Who uses it:**
 - 💰 Fintech apps and digital wallets handling IQD
@@ -38,7 +38,7 @@ Most global FX APIs (Fixer, OpenExchangeRates, XE) either don't carry IQD at all
 ## 60-Second Quick Start
 
 **Step 1 — Get your free API key**  
-Go to [erbilrate.com](https://usd-ih41.onrender.com/) → Sign in → Generate Key. Takes 30 seconds.
+Go to [iqdrate.com](https://usd-ih41.onrender.com/) → Sign in → Generate Key. Takes 30 seconds.
 
 **Step 2 — Make your first request**
 
@@ -197,7 +197,7 @@ Ready-to-use code snippets for your language:
 
 ## Rate Limits
 
-ErbilRate uses a **token budget system**. Each API call costs tokens from your daily budget.
+IQDRate uses a **token budget system**. Each API call costs tokens from your daily budget.
 
 | Tier | Daily Token Budget | Speed Limit | Price |
 |---|---|---|---|
@@ -244,7 +244,7 @@ Every response includes an `X-Request-ID` header. Include this in support reques
 
 ## Security
 
-ErbilRate is built with production-grade security:
+IQDRate is built with production-grade security:
 
 - **RS256 JWT verification** — All admin tokens verified against Clerk's JWKS endpoint
 - **Brute-force protection** — IPs blocked after 10 failed auth attempts (15-minute window)
@@ -269,8 +269,8 @@ This repository contains the complete API layer — authentication, rate limitin
 - A Clerk account (for admin JWT auth)
 
 ```bash
-git clone https://github.com/abdulhadikamaran/erbilrate-api
-cd erbilrate-api
+git clone https://github.com/abdulhadikamaran/iqdrate-api
+cd iqdrate-api
 pip install -r requirements.txt
 cp .env.example .env
 # Fill in your .env values (see .env.example for all required vars)
@@ -279,7 +279,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 See [`.env.example`](.env.example) for all required configuration.
 
-> **Note:** The live ErbilRate service uses a proprietary real-time data pipeline not included in this repository. This repo gives you the full API infrastructure — bring your own data source.
+> **Note:** The live IQDRate service uses a proprietary real-time data pipeline not included in this repository. This repo gives you the full API infrastructure — bring your own data source.
 
 ---
 
@@ -298,7 +298,7 @@ Yes. The API passes 47/47 security tests and runs on production infrastructure. 
 Not yet — official SDKs for JS, Python, PHP, and Flutter are planned. For now, use the ready-made [examples](examples/).
 
 **How is this different from Fixer or XE?**  
-Global APIs publish a government rate updated once a day. ErbilRate sources the actual Erbil bazaar rate in real-time — the rate you'd get exchanging cash on the ground.
+Global APIs publish a government rate updated once a day. IQDRate sources the actual Erbil bazaar rate in real-time — the rate you'd get exchanging cash on the ground.
 
 **What happens if the service is briefly down?**  
 The `/api/health` endpoint is always public. Cache the last known rate on your side and retry with exponential backoff.
@@ -332,7 +332,7 @@ See [`CHANGELOG.md`](CHANGELOG.md) for the full version history.
 
 ## License
 
-MIT © ErbilRate — see [`LICENSE`](LICENSE) for details.
+MIT © IQDRate — see [`LICENSE`](LICENSE) for details.
 
 ---
 

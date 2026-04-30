@@ -1,5 +1,5 @@
 """
-ErbilRate Full Security Test Suite
+IQDRate Full Security Test Suite
 ====================================
 Covers all 12 security domains from SECURITY_SKILLS.md
 Run with: python -m scripts.security_test_suite
